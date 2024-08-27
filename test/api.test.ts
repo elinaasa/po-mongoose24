@@ -208,25 +208,26 @@ describe('GET /api/v1', () => {
   });
 
   // delete test data
+  /*
+  it('Should delete a category', async () => {
+    if (Array.isArray(categoryResponse.data)) {
+      return;
+    }
+    await deleteCategory(app, categoryResponse.data._id);
+  });
 
-  // it('Should delete a category', async () => {
-  //   if (Array.isArray(categoryResponse.data)) {
-  //     return;
-  //   }
-  //   await deleteCategory(app, categoryResponse.data._id);
-  // });
+  it('Should delete a species', async () => {
+    if (Array.isArray(speciesResponse.data)) {
+      return;
+    }
+    await deleteSpecies(app, speciesResponse.data._id);
+  });
 
-  // it('Should delete a species', async () => {
-  //   if (Array.isArray(speciesResponse.data)) {
-  //     return;
-  //   }
-  //   await deleteSpecies(app, speciesResponse.data._id);
-  // });
-
-  // it('Should delete an animal', async () => {
-  //   if (Array.isArray(animalResponse.data)) {
-  //     return;
-  //   }
-  //   await deleteAnimal(app, animalResponse.data._id);
-  // });
+  it('Should delete an animal', async () => {
+    if (Array.isArray(animalResponse.data)) {
+      return;
+    }
+    await deleteAnimal(app, animalResponse.data._id);
+  });
+  */
 });

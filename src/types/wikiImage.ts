@@ -1,31 +1,31 @@
-  type Normalized = {
-    fromencoded: boolean;
-    from: string;
-    to: string;
-};
-
-type Thumbnail = {
-    source: string;
-    width: number;
-    height: number;
-};
-
-type Page = {
-    pageid: number;
-    ns: number;
-    title: string;
-    thumbnail: Thumbnail;
-    pageimage: string;
+type WikiImage = {
+  batchcomplete: boolean;
+  query: Query;
 };
 
 type Query = {
-    normalized: Normalized[];
-    pages: Page[];
+  normalized: Normalized[];
+  pages: Page[];
 };
 
-type WikiImage = {
-    batchcomplete: boolean;
-    query: Query;
+type Normalized = {
+  fromencoded: boolean;
+  from: string;
+  to: string;
 };
 
-export {WikiImage};
+type Page = {
+  pageid: number;
+  ns: number;
+  title: string;
+  thumbnail: Thumbnail;
+  pageimage: string;
+};
+
+type Thumbnail = {
+  source: string;
+  width: number;
+  height: number;
+};
+
+export default WikiImage;
