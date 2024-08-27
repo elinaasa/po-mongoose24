@@ -18,7 +18,7 @@ const postAnimal = async (
     const newAnimal = new AnimalModel(req.body);
     const savedAnimal = await newAnimal.save();
 
-    res.json({
+    res.status(201).json({
       message: 'Animal added successfully',
       data: savedAnimal
     });
