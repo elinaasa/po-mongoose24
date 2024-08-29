@@ -1,140 +1,139 @@
-import { Request, Response } from 'express';
-import { Animal } from '../../types/Animal';
-import { MessageResponse } from '../../types/Messages';
+import {NextFunction, Request, Response} from 'express';
 import AnimalModel from '../models/animalModel';
+import {Animal} from '../../types/Animal';
+import {MessageResponse} from '../../types/Messages';
 import CustomError from '../../classes/CustomError';
-import { NextFunction } from 'connect';
 
 type DBMessageResponse = MessageResponse & {
   data: Animal | Animal[];
-}
+};
 
 const postAnimal = async (
   req: Request<{}, {}, Animal>,
   res: Response<DBMessageResponse>,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const newAnimal = new AnimalModel(req.body);
     const savedAnimal = await newAnimal.save();
 
     res.status(201).json({
-      message: 'Animal added successfully',
-      data: savedAnimal
+      message: 'Animal created',
+      data: savedAnimal,
     });
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
-
 };
 
-const getAnimals = async (
+const getAnimal = async (
   req: Request,
-  res: Response<DBMessageResponse>,
-  next: NextFunction
+  res: Response<Animal[]>,
+  next: NextFunction,
 ) => {
   try {
-    const animals = await AnimalModel.find();
-
-    res.json({
-      message: 'Animals fetched successfully',
-      data: animals
+    const species = await AnimalModel.find()
+    .select('-__v')
+    .populate({
+      path: 'species',
+      select: '-__v',
+      populate: {
+        path: 'category',
+        select: '-__v',
+      },
     });
+
+    res.json(species);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
-}
+};
 
-const getAnimal = async (
+const getSingleAnimal = async (
   req: Request<{id: string}>,
-  res: Response<DBMessageResponse>,
-  next: NextFunction
+  res: Response<Animal>,
+  next: NextFunction,
 ) => {
   try {
-    const animal = await AnimalModel.findById(req.params.id);
+    const species = await AnimalModel.findById(req.params.id);
 
-    if (!animal) {
-      return next(new CustomError('Animal not found', 404));
+    if (!species) {
+      throw new CustomError('Animal not found', 404);
     }
 
-    res.json({
-      message: 'Animal fetched successfully',
-      data: animal
-    });
+    res.json(species);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
-}
+};
 
 const putAnimal = async (
   req: Request<{id: string}, {}, Animal>,
   res: Response<DBMessageResponse>,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const updatedAnimal = await AnimalModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      {new: true},
     );
 
     if (!updatedAnimal) {
-      return next(new CustomError('Animal not found', 404));
+      throw new CustomError('Animal not found', 404);
     }
 
     res.json({
-      message: 'Animal updated successfully',
-      data: updatedAnimal
+      message: 'Animal updated',
+      data: updatedAnimal,
     });
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
-}
+};
 
 const deleteAnimal = async (
   req: Request<{id: string}>,
   res: Response<DBMessageResponse>,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const deletedAnimal = await AnimalModel.findByIdAndDelete(req.params.id);
 
     if (!deletedAnimal) {
-      return next(new CustomError('Animal not found', 404));
+      throw new CustomError('Animal not found', 404);
     }
 
     res.json({
-      message: 'Animal deleted successfully',
-      data: deletedAnimal
+      message: 'Animal deleted',
+      data: deletedAnimal,
     });
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
-}
+};
 
 const getAnimalsByBox = async (
-  req: Request<{}, {}, {}, {topRight: string, bottomLeft: string}>,
+  req: Request<{}, {}, {}, {topRight: string; bottomLeft: string}>,
   res: Response<Animal[]>,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const { topRight, bottomLeft } = req.query;
+    const {topRight, bottomLeft} = req.query;
 
     const animals = await AnimalModel.find({
       location: {
         $geoWithin: {
-          $box:
-          [topRight.split(','),
-          bottomLeft.split(',')]
-        }
-      }
+          $box: [topRight.split(','), bottomLeft.split(',')],
+        },
+      },
     });
+
     res.json(animals);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
-
   }
-}
+};
 
 const getBySpecies = async (
   req: Request<{species: string}>,
@@ -142,11 +141,20 @@ const getBySpecies = async (
   next: NextFunction,
 ) => {
   try {
-    const animals = await AnimalModel.findBySpecies(req.params.species );
+    const animals = await AnimalModel.findBySpecies(req.params.species);
+
     res.json(animals);
   } catch (error) {
     next(new CustomError((error as Error).message, 500));
   }
-}
+};
 
-export { postAnimal, getAnimals, getAnimal, putAnimal, deleteAnimal, getAnimalsByBox, getBySpecies };
+export {
+  postAnimal,
+  getAnimal,
+  getSingleAnimal,
+  putAnimal,
+  deleteAnimal,
+  getAnimalsByBox,
+  getBySpecies,
+};

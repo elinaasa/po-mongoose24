@@ -26,23 +26,24 @@ const animalSchema = new Schema<Animal>({
   },
 });
 
-animalSchema.statics.findBySpecies = function (species_name: string): Promise<Animal[]> {
+animalSchema.statics.findBySpecies = function (
+  species_name: string,
+): Promise<Animal[]> {
   return this.aggregate([
     {
       $lookup: {
         from: 'species',
         localField: 'species',
         foreignField: '_id',
-        as: 'speciesData',
+        as: 'species',
       },
     },
     {
       $match: {
-        'speciesData.species_name': species_name,
+        'species.species_name': species_name,
       },
     },
-  ]
-  );
-}
+  ]);
+};
 
 export default model<Animal, AnimalModel>('Animal', animalSchema);
