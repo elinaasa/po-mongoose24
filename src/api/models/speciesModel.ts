@@ -26,8 +26,21 @@ const speciesSchema = new Schema<Species>({
     coordinates: {
       type: [Number],
       required: true,
+      index: '2dsphere',
     },
   },
 });
 
-export default model<Species>('Species', speciesSchema);
+speciesSchema.statics.findByArea = function (
+  polygon: number,
+): Promise<Species[]> {
+  return this.find({
+    location: {
+      $geoWithin: {
+        $geometry: polygon,
+      },
+    },
+  }).exec();
+};
+
+export default model<Species & Document>('Species', speciesSchema);
