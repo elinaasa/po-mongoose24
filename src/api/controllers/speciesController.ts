@@ -104,4 +104,25 @@ const deleteSpecies = async (
   }
 };
 
-export {postSpecies, getSpecies, getSingleSpecies, putSpecies, deleteSpecies};
+const getSpeciesByArea = async (
+  req: Request<{}, {}, {polygon: number}>,
+  res: Response<Species[]>,
+  next: NextFunction,
+) => {
+  try {
+    const species = await SpeciesModel.findByArea(req.params.polygon);
+
+    res.json(species);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+export {
+  postSpecies,
+  getSpecies,
+  getSingleSpecies,
+  putSpecies,
+  deleteSpecies,
+  getSpeciesByArea,
+};

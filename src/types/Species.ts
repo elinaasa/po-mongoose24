@@ -9,7 +9,7 @@ type Species = {
   location: Point;
 };
 
-type SpeciesModel = mongoose.Model<Species & mongoose.Document> & {
+type SpeciesModel = mongoose.Model<Species> & {
   findByArea: (polygon: number) => Promise<Species[]>;
 };
 
