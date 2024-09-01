@@ -3,6 +3,7 @@ import SpeciesModel from '../models/speciesModel';
 import {Species} from '../../types/Species';
 import {MessageResponse} from '../../types/Messages';
 import CustomError from '../../classes/CustomError';
+import {Polygon} from 'geojson';
 
 type DBMessageResponse = MessageResponse & {
   data: Species | Species[];
@@ -105,12 +106,25 @@ const deleteSpecies = async (
 };
 
 const getSpeciesByArea = async (
-  req: Request<{}, {}, {polygon: number}>,
+  req: Request<{}, {}, {polygon: Polygon}>, // Expecting the polygon in the request body
   res: Response<Species[]>,
   next: NextFunction,
 ) => {
   try {
-    const species = await SpeciesModel.findByArea(req.params.polygon);
+    const {polygon} = req.body;
+
+    const species = await SpeciesModel.find({
+      location: {
+        $geoWithin: {
+          $geometry: polygon,
+        },
+      },
+    })
+      .select('-__v')
+      .populate({
+        path: 'category',
+        select: '-__v',
+      });
 
     res.json(species);
   } catch (error) {

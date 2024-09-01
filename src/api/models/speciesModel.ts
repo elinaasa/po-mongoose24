@@ -1,7 +1,17 @@
-import {model, Schema} from 'mongoose';
+import {model, Schema, Document, Model} from 'mongoose';
 import {Species} from '../../types/Species';
+import {Polygon} from 'geojson'; // Import the GeoJSON Polygon type
 
-const speciesSchema = new Schema<Species>({
+// Define the Species interface extending Document
+interface SpeciesDocument extends Species, Document {}
+
+// Define the SpeciesModel interface that includes the static method
+interface SpeciesModel extends Model<SpeciesDocument> {
+  findByArea(polygon: Polygon): Promise<SpeciesDocument[]>;
+}
+
+// Define the schema
+const speciesSchema = new Schema<SpeciesDocument>({
   species_name: {
     type: String,
     required: true,
@@ -31,9 +41,10 @@ const speciesSchema = new Schema<Species>({
   },
 });
 
+// Implement the findByArea static method
 speciesSchema.statics.findByArea = function (
-  polygon: number,
-): Promise<Species[]> {
+  polygon: Polygon,
+): Promise<SpeciesDocument[]> {
   return this.find({
     location: {
       $geoWithin: {
@@ -43,4 +54,5 @@ speciesSchema.statics.findByArea = function (
   }).exec();
 };
 
-export default model<Species & Document>('Species', speciesSchema);
+// Export the model with the correct typing
+export default model<SpeciesDocument, SpeciesModel>('Species', speciesSchema);

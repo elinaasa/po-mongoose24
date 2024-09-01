@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {Point} from 'geojson';
+import {Point, Polygon} from 'geojson';
 import {Category} from './Category';
 
 type Species = {
@@ -10,7 +10,7 @@ type Species = {
 };
 
 type SpeciesModel = mongoose.Model<Species> & {
-  findByArea: (polygon: number) => Promise<Species[]>;
+  findByArea: (polygon: Polygon) => Promise<Species[]>;
 };
 
 export {Species, SpeciesModel};
