@@ -5,6 +5,7 @@ import {
   getSpecies,
   postSpecies,
   putSpecies,
+  getSpeciesByArea,
 } from '../controllers/speciesController';
 import {addImageToSpecies} from '../../middlewares';
 
@@ -16,6 +17,7 @@ router
   .route('/:id')
   .get(getSingleSpecies)
   .put(putSpecies)
-  .delete(deleteSpecies);
+  .delete(deleteSpecies)
+  .post(getSpeciesByArea);
 
 export default router;
